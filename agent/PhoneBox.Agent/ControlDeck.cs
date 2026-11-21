@@ -79,12 +79,15 @@ public sealed partial class ControlDeck : BackgroundService
         var audio = Audio();
         if (!audio.Available || audio.Sessions.Count == 0) return audio;
         var defaultOutput = audio.Defaults?.GetValueOrDefault("output:1");
+        // Every application with a live (not expired) session is listed, playing or silent, like Windows' own mixer.
         var sessions = audio.Sessions
-            .Where(s => s.Active || s.Pid == 0)
             .GroupBy(ApplicationKey, StringComparer.Ordinal)
             .Select(group =>
             {
-                var representative = group.FirstOrDefault(s => s.DeviceId == defaultOutput) ?? group.First();
+                var representative = group.FirstOrDefault(s => s.Active && s.DeviceId == defaultOutput)
+                    ?? group.FirstOrDefault(s => s.Active)
+                    ?? group.FirstOrDefault(s => s.DeviceId == defaultOutput)
+                    ?? group.First();
                 return representative with
                 {
                     Id = "application:" + group.Key,

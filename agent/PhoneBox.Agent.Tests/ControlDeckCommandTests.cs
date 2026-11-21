@@ -99,19 +99,35 @@ public sealed class ControlDeckCommandTests
         Assert.Equal(100,chrome.GetProperty("Volume").GetInt32());
     }
     [Fact]
-    public async Task SnapshotHidesInactiveSessionsButGroupedWritesStillReachThem()
+    public async Task SnapshotGroupsInactiveSessionsWithTheActiveOneAndWritesReachBoth()
     {
         using var f=new Fixture();
         f.Native.Sessions=
         [
-            new("active","Friendly app",10,"speaker",100,false,0,"rawapp",true),
             new("inactive","Friendly app",10,"headset",40,false,0,"rawapp",false),
+            new("active","Friendly app",10,"speaker",100,false,0,"rawapp",true),
         ];
         var json=System.Text.Json.JsonSerializer.Serialize(await f.Deck.Snapshot(default));
         using var document=System.Text.Json.JsonDocument.Parse(json);
-        Assert.Single(document.RootElement.GetProperty("audio").GetProperty("Sessions").EnumerateArray());
+        var only=Assert.Single(document.RootElement.GetProperty("audio").GetProperty("Sessions").EnumerateArray());
+        Assert.Equal(100,only.GetProperty("Volume").GetInt32()); // the playing session represents the application
         Assert.True((await f.Act("session","application:friendly app",55)).Ok);
-        Assert.Equal(["session:active","session:inactive"],f.Native.Writes);
+        Assert.Equal(["session:inactive","session:active"],f.Native.Writes);
+    }
+    [Fact]
+    public async Task SnapshotListsSilentApplicationsLikeTheWindowsMixer()
+    {
+        using var f=new Fixture();
+        f.Native.Sessions=
+        [
+            new("spotify","Spotify",10,"speaker",100,false,.3f,"Spotify",true),
+            new("firefox","Firefox",11,"speaker",100,false,0,"firefox",false),
+            new("steam","Steam",12,"speaker",2,false,0,"steam",false),
+        ];
+        var json=System.Text.Json.JsonSerializer.Serialize(await f.Deck.Snapshot(default));
+        using var document=System.Text.Json.JsonDocument.Parse(json);
+        var ids=document.RootElement.GetProperty("audio").GetProperty("Sessions").EnumerateArray().Select(s=>s.GetProperty("Id").GetString()!).ToArray();
+        Assert.Equal(["application:spotify","application:firefox","application:steam"],ids);
     }
     [Fact]
     public async Task UnknownProcessesDoNotCollapseIntoOneApplication()
