@@ -11,6 +11,24 @@ string[] SameOrigins = [$"http://127.0.0.1:{Port}", $"http://localhost:{Port}"];
 // Install scripts ask where the agent belongs (it differs per OS), then copy it there.
 if (args.Contains("--print-install-dir")) { Console.WriteLine(AppPaths.InstallDir); return; }
 
+// Started from a packaged app (a Claude Desktop session): its file virtualization would keep this agent's settings in
+// the package's LocalCache, and the copy the Startup shortcut starts would show another layout. Hand over to a copy
+// outside the package. A --config path was chosen on purpose, so it stays.
+string? packageNote = null;
+if (OperatingSystem.IsWindows() && !args.Contains("--config") && PackageSandbox.RedirectedTo(AppPaths.ConfigDir) is { } package)
+{
+    if (args.Contains(PackageSandbox.RelaunchedFlag))
+        packageNote = $"settings writes still land in {package}; they won't reach the agent started at sign-in";
+    else if (Environment.ProcessPath is { } self)
+    {
+        // the same arguments (and the .dll under dotnet), --restart kept so the copy waits for this one to let go
+        var relaunchArgs = AppRestart.StartInfo(self, args).ArgumentList
+            .Where(a => a != "--restart").Concat(args.Contains("--restart") ? ["--restart"] : []).Append(PackageSandbox.RelaunchedFlag);
+        if (PackageSandbox.StartOutside(self, relaunchArgs) is not { } failed) return;
+        packageNote = $"started inside the package {package}, and starting outside it failed ({failed}): settings saved now stay in its LocalCache";
+    }
+}
+
 // Single instance: a second launch opens the running instance's settings page and exits.
 // After a restart the previous instance may still be shutting down, so wait for it briefly.
 var single = new Mutex(false, endpoint.MutexName);
@@ -992,6 +1010,15 @@ app.MapDelete("/api/settings/shortcut-icon", (string id, HttpRequest req, Config
 app.Lifetime.ApplicationStarted.Register(() =>
     app.Logger.LogInformation("PhoneBox agent {Version} ready on http://127.0.0.1:{Port}, phone USB port {UsbPort} (config: {Path})",
         AppPaths.Version, Port, usb.Port, configPath));
+if (packageNote is not null)
+    app.Lifetime.ApplicationStarted.Register(() => app.Logger.LogWarning("Package: {Note}", packageNote));
+else if (!args.Contains("--config"))
+    app.Lifetime.ApplicationStarted.Register(() =>
+    {
+        foreach (var copy in PackageSandbox.NewerCopies(configPath))
+            app.Logger.LogWarning("Package: {Copy} is newer than {Config}: an agent started from that app saved its layout there; copy it over to keep it",
+                copy, configPath);
+    });
 
 app.Run();
 

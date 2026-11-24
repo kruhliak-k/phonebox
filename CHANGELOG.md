@@ -24,6 +24,9 @@
 - Discord: a speaking ring can no longer stay on after someone stops talking when you switch channels; speaking
   events count only once both of the channel's subscriptions are in place (#354,
   [M00n-of-saturn](https://github.com/M00n-of-saturn)).
+- Windows: an agent started from a packaged app (a Claude Desktop session, for one) no longer keeps its settings in
+  that app's sandbox, where the layout you edited was missing after a reboot. It starts itself again outside the
+  package, and an agent that finds a newer layout left in a package's LocalCache says so in the log.
 
 ## 0.9.27 — 2026-11-21
 
