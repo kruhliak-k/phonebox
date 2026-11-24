@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Нотатки</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23d97757'/><path d='M30 32h40M30 50h40M30 68h26' stroke='white' stroke-width='8' stroke-linecap='round'/></svg>">
+<style>
+  :root {
+    --bg: #000; --surface: #111315; --surface-2: #181b1e; --line: #ffffff12;
+    --text: #eef2f6; --muted: #8b95a1; --accent: #d97757; --ok: #4ade80; --err: #f87171;
+    --radius: 18px;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f2ef; --surface: #ffffff; --surface-2: #f7f5f2; --line: #00000012;
+    --text: #1d1f22; --muted: #6b7280; color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.55 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    display: flex; flex-direction: column;
+  }
+  header {
+    display: flex; align-items: center; gap: 14px; padding: 18px 28px 0;
+  }
+  .logo { width: 30px; height: 30px; border-radius: 9px; background: var(--accent); display: grid; place-items: center; }
+  .logo svg { width: 18px; height: 18px; }
+  h1 { font-size: 20px; font-weight: 600; margin: 0; letter-spacing: .01em; }
+  .status { margin-left: auto; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); transition: background .2s; }
+  .dot.busy { background: var(--accent); }
+  .dot.err { background: var(--err); }
+  .icon-btn {
+    border: 1px solid var(--line); background: var(--surface); color: var(--muted);
+    border-radius: 10px; width: 34px; height: 34px; cursor: pointer; display: grid; place-items: center;
+  }
+  .icon-btn:hover { color: var(--text); }
+  main {
+    flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+    gap: 18px; padding: 18px 28px 28px;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+  }
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid var(--line);
+    font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+  }
+  .card-head b { color: var(--accent); font-weight: 700; }
+  textarea {
+    flex: 1; width: 100%; resize: none; border: 0; outline: 0; background: transparent; color: var(--text);
+    font: 17px/1.7 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif; padding: 18px 22px;
+  }
+  textarea::placeholder { color: var(--muted); }
+  .hint { font-size: 12px; color: var(--muted); text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .add { display: flex; gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+  .add input {
+    flex: 1; min-width: 0; background: var(--surface-2); border: 1px solid var(--line); color: var(--text);
+    border-radius: 12px; padding: 10px 14px; font: inherit; outline: 0;
+  }
+  .add input:focus { border-color: var(--accent); }
+  .add button {
+    background: var(--accent); color: #fff; border: 0; border-radius: 12px; padding: 0 16px;
+    font: 600 15px inherit; cursor: pointer;
+  }
+  ul { list-style: none; margin: 0; padding: 8px; overflow: auto; flex: 1; }
+  li {
+    display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px;
+  }
+  li:hover { background: var(--surface-2); }
+  li .grip { color: var(--muted); cursor: grab; user-select: none; font-size: 14px; }
+  li input {
+    flex: 1; min-width: 0; border: 0; background: transparent; color: var(--text); font: inherit; outline: 0; padding: 2px 0;
+  }
+  li input:focus { border-bottom: 1px solid var(--accent); }
+  li .del { opacity: 0; border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 18px; padding: 0 4px; }
+  li:hover .del, li:focus-within .del { opacity: 1; }
+  li .del:hover { color: var(--err); }
+  li.dragging { opacity: .4; }
+  .empty { color: var(--muted); text-align: center; padding: 30px 10px; font-size: 14px; }
+  @media (max-width: 760px) {
+    header { padding: 14px 16px 0; }
+    main { grid-template-columns: 1fr; padding: 14px 16px 16px; grid-auto-rows: minmax(320px, auto); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M6 7h12M6 12h12M6 17h8"/></svg></div>
+  <h1>Нотатки</h1>
+  <div class="status"><span class="dot" id="dot"></span><span id="status">Підключення…</span></div>
+  <button class="icon-btn" id="theme" title="Світла / темна тема" aria-label="Змінити тему">◐</button>
+</header>
+<main>
+  <section class="card">
+    <div class="card-head"><span><b>●</b>&nbsp; Нотатка на панелі</span><span class="hint">зберігається сама · Ctrl+S</span></div>
+    <textarea id="note" placeholder="Пишіть тут…" spellcheck="true"></textarea>
+  </section>
+  <section class="card">
+    <div class="card-head"><span>Справи</span><span class="hint" id="count"></span></div>
+    <form class="add" id="addForm" autocomplete="off">
+      <input id="newItem" placeholder="Нова справа…" maxlength="120">
+      <button type="submit">Додати</button>
+    </form>
+    <ul id="list"></ul>
+  </section>
+</main>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const H = { 'Content-Type': 'application/json', 'X-Notes': '1' };
+  let items = [], noteTimer = null, todoTimer = null, noteDirty = false, todoDirty = false, lastNote = null;
+
+  try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (_) {}
+  $('theme').onclick = () => {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch (_) {}
+  };
+
+  function status(text, kind) {
+    $('status').textContent = text;
+    $('dot').className = 'dot' + (kind ? ' ' + kind : '');
+  }
+
+  async function api(path, body) {
+    const r = await fetch(path, body === undefined ? { headers: H } : { method: 'PUT', headers: H, body: JSON.stringify(body) });
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+  }
+
+  async function load() {
+    try {
+      const d = await api('/api/notes');
+      if (!noteDirty && document.activeElement !== $('note') && d.note !== lastNote) { $('note').value = d.note; lastNote = d.note; }
+      if (!noteDirty && lastNote === null) { $('note').value = d.note; lastNote = d.note; }
+      if (!todoDirty && !document.querySelector('#list input:focus') && JSON.stringify(d.todo) !== JSON.stringify(items)) { items = d.todo; render(); }
+      if (!noteDirty && !todoDirty) status('Синхронізовано з телефоном');
+    } catch (_) { status('Немає зв’язку з сервером нотаток', 'err'); }
+  }
+
+  async function saveNote() {
+    clearTimeout(noteTimer);
+    if (!noteDirty) return;
+    const text = $('note').value;
+    try { await api('/api/note', { text }); lastNote = text; noteDirty = false; status('Збережено · на телефоні за 2–3 с'); }
+    catch (_) { status('Не вдалося зберегти', 'err'); }
+  }
+  async function saveTodo() {
+    clearTimeout(todoTimer);
+    if (!todoDirty) return;
+    try { await api('/api/todo', { items: items.map((s) => s.trim()).filter(Boolean) }); todoDirty = false; status('Збережено · на телефоні за 2–3 с'); }
+    catch (_) { status('Не вдалося зберегти', 'err'); }
+  }
+
+  $('note').addEventListener('input', () => {
+    noteDirty = true; status('Зберігаю…', 'busy');
+    clearTimeout(noteTimer); noteTimer = setTimeout(saveNote, 600);
+  });
+  $('note').addEventListener('blur', saveNote);
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveNote(); saveTodo(); }
+  });
+
+  function changed() { todoDirty = true; status('Зберігаю…', 'busy'); clearTimeout(todoTimer); todoTimer = setTimeout(saveTodo, 500); }
+
+  function render() {
+    const list = $('list');
+    list.replaceChildren();
+    $('count').textContent = items.length ? items.length + ' шт.' : '';
+    if (!items.length) { const e = document.createElement('li'); e.className = 'empty'; e.textContent = 'Поки порожньо. Додайте першу справу.'; list.append(e); return; }
+    items.forEach((text, i) => {
+      const li = document.createElement('li');
+      li.draggable = true;
+      const grip = document.createElement('span'); grip.className = 'grip'; grip.textContent = '⋮⋮';
+      const input = document.createElement('input'); input.value = text; input.maxLength = 120;
+      input.addEventListener('input', () => { items[i] = input.value; changed(); });
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('newItem').focus(); } });
+      input.addEventListener('blur', () => { if (!input.value.trim()) { items.splice(i, 1); changed(); render(); } });
+      const del = document.createElement('button'); del.className = 'del'; del.textContent = '×'; del.title = 'Видалити';
+      del.onclick = () => { items.splice(i, 1); changed(); render(); };
+      li.addEventListener('dragstart', (e) => { li.classList.add('dragging'); e.dataTransfer.setData('text/plain', String(i)); });
+      li.addEventListener('dragend', () => li.classList.remove('dragging'));
+      li.addEventListener('dragover', (e) => e.preventDefault());
+      li.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const from = +e.dataTransfer.getData('text/plain');
+        if (from === i) return;
+        const [moved] = items.splice(from, 1); items.splice(i, 0, moved); changed(); render();
+      });
+      li.append(grip, input, del);
+      list.append(li);
+    });
+  }
+
+  $('addForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const v = $('newItem').value.trim();
+    if (!v) return;
+    items.push(v); $('newItem').value = ''; changed(); render();
+  });
+
+  window.addEventListener('beforeunload', () => { saveNote(); saveTodo(); });
+  render();
+  load();
+  setInterval(load, 2000);
+</script>
+</body>
+</html>

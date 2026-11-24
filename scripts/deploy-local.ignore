@@ -1,0 +1,3 @@
+# Branches deploy-local.ps1 doesn't require in my-build: their work is in it in another form.
+# One branch per line; text after # is the reason.
+codex/phone-camera-snapshot   # first draft of the phone webcam and the mixer change; the reworked camera and mixer-show-all-apps replaced it

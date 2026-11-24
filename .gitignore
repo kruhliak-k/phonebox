@@ -23,6 +23,7 @@ dist/
 
 # Local tooling / personal data
 .temp_files/
+.deploy-stage/
 .playwright-mcp/
 .claude/
 extras/**/backup/
