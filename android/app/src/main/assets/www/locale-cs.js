@@ -778,7 +778,7 @@ window.PhoneBoxLocaleData = Object.assign(window.PhoneBoxLocaleData || {}, {
       "s.kiosk.homeScreen": "Použijte panel jako domovskou obrazovku telefonu: začíná po restartu a Home se vrátí k němu (vypněte, abyste získali spouštěč zpět)",
       "s.kiosk.keepAwake": "Udržujte telefon vzhůru: vypněte spořič obrazovky Android (začíná na nabíječce) a udržujte obrazovku zapnutou, když je připojena (nastavte nad USB)",
       "s.kiosk.openOnConnect": "Otevřete PhoneBox, když je telefon připojen: probuďte telefon a přiveďte panel dopředu pokaždé, když se připojí přes USB (vypněte jej, abyste ho otevřeli sami, pro telefon, který také používáte k testování aplikací)",
-      "s.kiosk.followLock": "Postupujte podle zámku počítače: vypněte obrazovku telefonu, když macOS zamkne; probuďte jej a otevřete PhoneBox, když macOS odemkne (vyžaduje ADB; ručně odemkněte telefony zabezpečené PIN nebo heslem)",
+      "s.kiosk.followLock": "Postupujte podle zámku počítače: vypněte obrazovku telefonu, když macOS / Windows zamkne; probuďte jej a otevřete PhoneBox, když macOS / Windows odemkne (vyžaduje ADB; ručně odemkněte telefony zabezpečené PIN nebo heslem)",
       "s.claude.shareConversation": "Zobrazit konverzaci v telefonu (klepnutím na relaci Claude Code zobrazíte její poslední zprávy a kroky; jedná se o vaše výzvy a odpovědi Claude, které jsou odeslány pouze do vašeho telefonu)",
       "s.claude.onlyWhenAway": "Pouze když jsem pryč od PC (bez klávesnice nebo myši na minutu)",
       "s.claude.shareSessionTitles": "Zobrazit tituly chatu Claude Code na telefonu (Claude Code často čerpá je z první výzvy)",

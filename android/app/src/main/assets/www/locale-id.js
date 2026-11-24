@@ -778,7 +778,7 @@ window.PhoneBoxLocaleData = Object.assign(window.PhoneBoxLocaleData || {}, {
       "s.kiosk.homeScreen": "Gunakan panel sebagai layar utama telepon: ia dimulai setelah restart dan Home kembali ke layar utama (matikan untuk mendapatkan peluncuran Anda kembali)",
       "s.kiosk.keepAwake": "Jaga telepon tetap hidup: matikan screen saver Android (diawali pada pengisi daya) dan jaga layar menyala saat tersambung (set di atas USB )",
       "s.kiosk.openOnConnect": "Buka PhoneBox ketika ponsel tersambung: bangunkan ponsel dan bawa panel ke depan setiap kali ia terhubung melalui USB (matikan untuk membukanya sendiri, untuk ponsel yang juga Anda gunakan untuk pengujian aplikasi)",
-      "s.kiosk.followLock": "Ikuti kunci komputer: matikan layar ponsel ketika macOS mengunci; bangun dan buka PhoneBox saat macOS membuka (ADB diperlukan; buka telepon yang dilindungi oleh PIN atau sandi secara manual)",
+      "s.kiosk.followLock": "Ikuti kunci komputer: matikan layar ponsel ketika macOS / Windows mengunci; bangun dan buka PhoneBox saat macOS / Windows membuka (ADB diperlukan; buka telepon yang dilindungi oleh PIN atau sandi secara manual)",
       "s.claude.shareConversation": "Tampilkan percakapan di telepon (tap sesi Claude Code untuk melihat pesan dan langkah terbarunya; ini adalah prompt Anda dan jawaban Claude, dikirim hanya ke ponsel Anda)",
       "s.claude.onlyWhenAway": "Hanya ketika aku tidak berada di PC (tidak ada papan ketik atau tetikus selama satu menit)",
       "s.claude.shareSessionTitles": "Tampilkan judul obrolan Claude Code di telepon (Claude Code sering menariknya dari prompt pertama Anda)",

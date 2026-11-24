@@ -15,6 +15,8 @@
   lost a stray "Name" and its broken apostrophes.
 
 **Agent**
+- Settings › Display › Kiosk › *Follow the computer lock* now works on Windows too (it was macOS only): the phone screen
+  turns off when Windows locks, or another user takes the screen, and wakes with PhoneBox open after you unlock.
 - USB: the adb server the agent starts no longer hangs when another program listens on an emulator port (Native
   Instruments' NTKDaemon takes 5563, shown as `emulator-5562 offline`), which left the phone "not connected". It now
   checks only port 5555 for emulators, unless `ADB_LOCAL_TRANSPORT_MAX_PORT` is already set.

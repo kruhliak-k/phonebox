@@ -778,7 +778,7 @@ window.PhoneBoxLocaleData = Object.assign(window.PhoneBoxLocaleData || {}, {
       "s.kiosk.homeScreen": "パネルを携帯電話のホーム画面として使用:リブート後に起動し、Home が戻ります (ランダムなランチャーを復元するにはオフにしてください)",
       "s.kiosk.keepAwake": "携帯電話を起動状態に保つ: Android のスクリーンセーバーをオフにして、プラグイン中はスクリーンをオンにします (USB を上回る設定)",
       "s.kiosk.openOnConnect": "携帯電話が接続されている時に PhoneBox を開く: USB 上で接続するときは、いつでも携帯電話を起動し、パネルを前面に移動します。 (アプリケーションテストにも使う携帯電話の場合、自分で開くにはオフにしてください)",
-      "s.kiosk.followLock": "コンピュータロックに従う: macOS がロックするときは携帯電話のスクリーンをオフにします。macOS がロック解除するときは起動して PhoneBox を開きます（ADB が必要です。PINやパスワードで保護された携帯電話は手動でロック解除します）",
+      "s.kiosk.followLock": "コンピュータロックに従う: macOS / Windows がロックするときは携帯電話のスクリーンをオフにします。macOS / Windows がロック解除するときは起動して PhoneBox を開きます（ADB が必要です。PINやパスワードで保護された携帯電話は手動でロック解除します）",
       "s.claude.shareConversation": "電話で会話を表示 (Claude Code セッションをタップすると、最近のメッセージとステップが表示されます。これはあなたのプロンプトと Claude の返信です。電話にだけ送信されます)",
       "s.claude.onlyWhenAway": "PC から離れたときのみ (1 分間キーボードやマウスを使わない)",
       "s.claude.shareSessionTitles": "電話で Claude Code チャットタイトルを表示します (Claude Code は通常、最初のプロンプトから引用されます)",

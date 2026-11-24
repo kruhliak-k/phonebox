@@ -208,7 +208,7 @@ public sealed class DisplayConfig
     /// <summary>Over USB, wake the phone and open PhoneBox when it is plugged in (or adb reconnects). Off: the panel opens only
     /// when you start it on the phone, from the tray or the settings page.</summary>
     public bool OpenOnConnect { get; set; } = true;
-    /// <summary>On macOS, sleep the connected phone when the computer locks; wake it and open PhoneBox after unlock.</summary>
+    /// <summary>On macOS and Windows, sleep the connected phone when the computer locks; wake it and open PhoneBox after unlock.</summary>
     public bool FollowComputerLock { get; set; }
     /// <summary>The page the panel returns to (idle return, Back); null = the first page.</summary>
     public string? HomePage { get; set; }
